@@ -24,20 +24,28 @@ struct Passwd* new_password(char *key, char *password)
 
 int main([[maybe_unused]]int ac, [[maybe_unused]]char *av[], [[maybe_unused]]char *ev[])
 {
+    [[maybe_unused]]struct Passwd* (*np)(char*, char*) = &new_password; //i just felt like using a function pointer lmao
     char *home_dir = getenv("HOME");
+    size_t dest_file_size = strlen(home_dir) + strlen("/.passwds") + 1;
+    char dest_file[dest_file_size];
     if (!home_dir) { return 2; }
     const char intro[] = "===PASSWORD MANAGER===\n";
     (void)write(1, intro, sizeof(intro) - 1);
     const char making[] = "Making the passwords file...\n";
-    const char *dest_file = strcat(home_dir, "/.passwds");
-    (void)write(1, dest_file, strlen(dest_file));
     (void)write(1, making, sizeof(making) - 1);
-    if (open(dest_file, O_RDWR, PERMS) == -1 )
+    strcpy(dest_file, home_dir);
+    strcat(dest_file, "/.passwds");
+    int pass_file = open(dest_file, O_CREAT | O_RDWR, PERMS);
+    if (pass_file == -1 )
     {
         const char make_error[] = "failed to create passwords file";
         (void)write(2, make_error, sizeof(make_error) - 1);
         return 2;
     }
-    sleep(2);
+    const char pass[] = "Enter a password: ";
+    char pass_buf[256];
+    (void)write(1, pass, sizeof(pass) - 1);
+    (void)read(0, pass_buf, 256);
+    close(pass_file);
     return 0;
 }

@@ -24,20 +24,20 @@ struct Passwd* new_password(char *key, char *password)
 
 int main([[maybe_unused]]int ac, [[maybe_unused]]char *av[], [[maybe_unused]]char *ev[])
 {
-    const char *home_dir = strdup(getenv("$HOME"));
-    (void)write(1, home_dir, strlen(home_dir));
+    char *home_dir = getenv("HOME");
+    if (!home_dir) { return 2; }
     const char intro[] = "===PASSWORD MANAGER===\n";
     (void)write(1, intro, sizeof(intro) - 1);
     const char making[] = "Making the passwords file...\n";
+    const char *dest_file = strcat(home_dir, "/.passwds");
+    (void)write(1, dest_file, strlen(dest_file));
     (void)write(1, making, sizeof(making) - 1);
-    /* if (open("", O_CREAT | O_RDWR, PERMS) != )
+    if (open(dest_file, O_RDWR, PERMS) == -1 )
     {
         const char make_error[] = "failed to create passwords file";
         (void)write(2, make_error, sizeof(make_error) - 1);
         return 2;
     }
-    */
     sleep(2);
-    free((void*)home_dir);
     return 0;
 }

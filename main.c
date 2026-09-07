@@ -2,33 +2,50 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define MAX_PASS 256
 #define PERMS 0660
 
 struct Passwd
 {
-    char *key; //what you'll use to access this password...so no intruder can see it...
     char *password;
+    char *host;
+    int id;
 };
 
-struct Passwd* new_password(char *key, char *password)
+struct Passwd* new_password(char *password, char *host, int id)
 {
     struct Passwd *psk = (struct Passwd*)malloc(sizeof(struct Passwd));
-    psk->key = strdup(key);
     psk->password = strdup(password);
+    psk->host = strdup(host);
+    psk->id = id;
     return psk;
+}
+
+//add a password to the global list
+void addPasswordToList(struct Passwd **list, struct Passwd *password, int *offset)
+{
+    if (list == NULL || password == NULL) return;
+    list[*offset] = password;
+    (*offset)++;
 }
 
 [[maybe_unused]]static struct Passwd *passwords[MAX_PASS];
 
+char global_key[128];
+
 int main([[maybe_unused]]int ac, [[maybe_unused]]char *av[], [[maybe_unused]]char *ev[])
 {
-    [[maybe_unused]]struct Passwd* (*np)(char*, char*) = &new_password; //i just felt like using a function pointer lmao
+    [[maybe_unused]]struct Passwd* (*np)(char*, char*, int) = &new_password; //i just felt like using a function pointer lmao
     char *home_dir = getenv("HOME");
     size_t dest_file_size = strlen(home_dir) + strlen("/.passwds") + 1;
     char dest_file[dest_file_size];
     if (!home_dir) { return 2; }
+    
+    _Bool running = true;
+    int pass_count = 0;
+    
     const char intro[] = "===PASSWORD MANAGER===\n";
     (void)write(1, intro, sizeof(intro) - 1);
     const char making[] = "Making the passwords file...\n";
@@ -42,10 +59,26 @@ int main([[maybe_unused]]int ac, [[maybe_unused]]char *av[], [[maybe_unused]]cha
         (void)write(2, make_error, sizeof(make_error) - 1);
         return 2;
     }
-    const char pass[] = "Enter a password: ";
-    char pass_buf[256];
-    (void)write(1, pass, sizeof(pass) - 1);
-    (void)read(0, pass_buf, 256);
+    while (running)
+    {
+        const char choice_q[] = "Are you creating a new password or you want to view all your passwords? (n/v): ";
+        (void)write(1, choice_q, sizeof(choice_q) - 1);
+        char choice;
+        int read_r = read(0, &choice, 1);
+        if (read_r > 1) {return -1;}
+        switch(choice)
+        {
+            case 'n':
+            case 'N': {
+                const char pass[] = "Enter the new password: ";
+                const char host[] = "Enter the key(for your use): ";
+                char pass_buf[256];
+                (void)write(1, pass, sizeof(pass) - 1);
+                (void)read(0, pass_buf, 256);
+                
+                break;
+            }
+        }
+    }
     close(pass_file);
-    return 0;
 }

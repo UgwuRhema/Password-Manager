@@ -27,6 +27,12 @@ int main([[maybe_unused]]int ac, [[maybe_unused]]char **av)
     (void)write(1, intro, sizeof(intro) - 1);
     const char making[] = "Making the passwords file...\n";
     (void)write(1, making, sizeof(making) - 1);
+    if (open("") != )
+    {
+        const char make_error[] = "failed to create passwords file";
+        (void)write(2, make_error, sizeof(make_error) - 1);
+        return 2;
+    }
     sleep(2);
     return 0;
 }

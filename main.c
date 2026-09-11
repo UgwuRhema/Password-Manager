@@ -28,7 +28,7 @@ struct Passwd* new_password(char *key, char *password, char *host, int id)
 //add a password to the global list
 void addPasswordToList(struct Passwd **list, struct Passwd *password, int *offset)
 {
-    if (list == NULL || password == NULL) return;
+    if (list == NULL || password == NULL || *offset >= MAX_PASS) return;
     list[*offset] = password;
     (*offset)++;
 }
@@ -60,11 +60,11 @@ int main([[maybe_unused]]int ac, [[maybe_unused]]char *av[], [[maybe_unused]]cha
     }
     while (running)
     {
-        const char choice_q[] = "Are you creating a new password or you want to view all your passwords? (n/v): ";
+        const char choice_q[] = "Are you creating a new password or you want to view all your passwords? (n/v/e): ";
         (void)write(1, choice_q, sizeof(choice_q) - 1);
         char choice;
         int read_r = read(0, &choice, 1);
-        if (read_r > 1) {return -1;}
+        if (read_r == -1) {return -1;}
         switch(choice)
         {
             case 'n':
@@ -72,10 +72,19 @@ int main([[maybe_unused]]int ac, [[maybe_unused]]char *av[], [[maybe_unused]]cha
                 const char pass[] = "Enter the new password: ";
                 char pass_buf[256];
                 (void)write(1, pass, sizeof(pass) - 1);
-                (void)read(0, pass_buf, 256);
-
+                (void)read(0, pass_buf, 255);
+                pass_buf[strlen(pass_buf)] = '\0'; 
                 break;
             }
+            case 'v':
+            case 'V': {
+
+            }
+            case 'e':
+            case 'E': {
+                running  = false;        
+                break;
+            }        
         }
     }
     close(pass_file);

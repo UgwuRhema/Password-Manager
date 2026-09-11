@@ -1,3 +1,5 @@
+#define MAX_PASS 256
+
 struct Passwd
 {
     char *key; //what you'll use to access this password...so no intruder can see it...

@@ -43,7 +43,7 @@ int main([[maybe_unused]]int ac, [[maybe_unused]]char *av[], [[maybe_unused]]cha
     size_t dest_file_size = strlen(home_dir) + strlen("/.passwds") + 1;
     char dest_file[dest_file_size];
     _Bool running = true;
-    int pass_count = 0;
+    [[maybe_unused]]int pass_count = 0;
     
     const char intro[] = "===PASSWORD MANAGER===\n";
     (void)write(1, intro, sizeof(intro) - 1);

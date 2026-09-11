@@ -71,21 +71,29 @@ int main([[maybe_unused]]int ac, [[maybe_unused]]char *av[], [[maybe_unused]]cha
             case 'N': {
                 const char pass[] = "Enter the new password: ";
                 char pass_buf[256];
+                memset(pass_buf, 0, 256);
                 (void)write(1, pass, sizeof(pass) - 1);
-                (void)read(0, pass_buf, 255);
-                pass_buf[strlen(pass_buf)] = '\0'; 
+                int bytes_read = read(0, pass_buf, 256);
+                pass_buf[bytes_read - 1] = '\0'; 
                 break;
             }
             case 'v':
             case 'V': {
-
+                break;
             }
             case 'e':
             case 'E': {
+                (void)write(1, "exiting", 7);
                 running  = false;        
                 break;
-            }        
+            }
+            default: {
+                const char def[] = "Invalid option, exiting";
+                (void)write(2, def, sizeof(def) - 1);
+                return 139; 
+            }
         }
     }
     close(pass_file);
+    return 0;
 }

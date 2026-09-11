@@ -9,14 +9,16 @@
 
 struct Passwd
 {
+    char *key; //what you'll use to access this password...so no intruder can see it...
     char *password;
     char *host;
     int id;
 };
 
-struct Passwd* new_password(char *password, char *host, int id)
+struct Passwd* new_password(char *key, char *password, char *host, int id)
 {
     struct Passwd *psk = (struct Passwd*)malloc(sizeof(struct Passwd));
+    psk->key = strdup(key);
     psk->password = strdup(password);
     psk->host = strdup(host);
     psk->id = id;
@@ -33,16 +35,13 @@ void addPasswordToList(struct Passwd **list, struct Passwd *password, int *offse
 
 [[maybe_unused]]static struct Passwd *passwords[MAX_PASS];
 
-char global_key[128];
-
 int main([[maybe_unused]]int ac, [[maybe_unused]]char *av[], [[maybe_unused]]char *ev[])
 {
-    [[maybe_unused]]struct Passwd* (*np)(char*, char*, int) = &new_password; //i just felt like using a function pointer lmao
+    [[maybe_unused]]struct Passwd* (*np)(char*, char*, char*, int) = &new_password; //i just felt like using a function pointer lmao
     char *home_dir = getenv("HOME");
+    if (!home_dir) { return 139; }
     size_t dest_file_size = strlen(home_dir) + strlen("/.passwds") + 1;
     char dest_file[dest_file_size];
-    if (!home_dir) { return 2; }
-    
     _Bool running = true;
     int pass_count = 0;
     
@@ -71,11 +70,10 @@ int main([[maybe_unused]]int ac, [[maybe_unused]]char *av[], [[maybe_unused]]cha
             case 'n':
             case 'N': {
                 const char pass[] = "Enter the new password: ";
-                const char host[] = "Enter the key(for your use): ";
                 char pass_buf[256];
                 (void)write(1, pass, sizeof(pass) - 1);
                 (void)read(0, pass_buf, 256);
-                
+
                 break;
             }
         }

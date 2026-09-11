@@ -37,19 +37,19 @@ int main([[maybe_unused]]int ac, [[maybe_unused]]char *av[], [[maybe_unused]]cha
     {
         const char choice_q[] = "Are you creating a new password or you want to view all your passwords? (n/v/e): ";
         (void)write(1, choice_q, sizeof(choice_q) - 1);
-        char choice;
-        int read_r = read(0, &choice, 1);
+        char choice[2];
+        int read_r = read(0, choice, 2);
         if (read_r == -1) {return -1;}
-        switch(choice)
+        switch(choice[0])
         {
             case 'n':
             case 'N': {
                 const char pass[] = "Enter the new password: ";
                 char pass_buf[256];
-                memset(pass_buf, 0, 256);
+                memset(pass_buf, 0, 256); //unfortunately this almost is unneccesary, kind of
                 (void)write(1, pass, sizeof(pass) - 1);
                 int bytes_read = read(0, pass_buf, 256);
-                pass_buf[bytes_read - 1] = '\0'; 
+                if (bytes_read > 0) { pass_buf[bytes_read - 1] = '\0'; } 
                 break;
             }
             case 'v':

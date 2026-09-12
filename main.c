@@ -6,7 +6,7 @@
 #include "pass.h"
 
 #define MAX_PASS 256
-#define PERMS 0660
+#define PERMS 0600
 
 [[maybe_unused]]static struct Passwd *passwords[MAX_PASS];
 
@@ -33,6 +33,7 @@ int main([[maybe_unused]]int ac, [[maybe_unused]]char *av[], [[maybe_unused]]cha
         (void)write(2, make_error, sizeof(make_error) - 1);
         return 2;
     }
+    system("chown root:root ~/.passwds"); 
     while (running)
     {
         const char choice_q[] = "Are you creating a new password or you want to view all your passwords? (n/v/e): ";
@@ -55,7 +56,7 @@ int main([[maybe_unused]]int ac, [[maybe_unused]]char *av[], [[maybe_unused]]cha
                 memset(key_buf, 0, 17);
                 (void)write(1, key, sizeof(key) - 1);
                 int key_bytes_read = read(0, key_buf, 17);
-		if (key_bytes_read > 0) { key_buf[key_bytes_read - 1] = '\0'; }
+		        if (key_bytes_read > 0) { key_buf[key_bytes_read - 1] = '\0'; }
                 break;
             }
             case 'v':

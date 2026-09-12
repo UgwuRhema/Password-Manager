@@ -1,3 +1,5 @@
+#very crappy
+
 C := cc
 CFLAGS := -Wall -Wextra -Werror -g -O0 -march=native
 

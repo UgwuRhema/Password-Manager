@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -29,9 +30,8 @@ int main([[maybe_unused]]int ac, [[maybe_unused]]char *av[], [[maybe_unused]]cha
     int pass_file = open(dest_file, O_CREAT | O_RDWR, PERMS);
     if (pass_file == -1 )
     {
-        const char make_error[] = "failed to create passwords file";
-        (void)write(2, make_error, sizeof(make_error) - 1);
-        return 2;
+        perror("Failed to open file");
+        return 139;
     }
     system("doas chown root:root ~/.passwds"); 
     while (running)

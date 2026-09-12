@@ -19,7 +19,7 @@ int main([[maybe_unused]]int ac, [[maybe_unused]]char *av[], [[maybe_unused]]cha
     char dest_file[dest_file_size];
     _Bool running = true;
     [[maybe_unused]]int pass_count = 0;
-    
+
     const char intro[] = "===PASSWORD MANAGER===\n";
     (void)write(1, intro, sizeof(intro) - 1);
     const char making[] = "Making the passwords file...\n";
@@ -49,7 +49,13 @@ int main([[maybe_unused]]int ac, [[maybe_unused]]char *av[], [[maybe_unused]]cha
                 memset(pass_buf, 0, 256); //unfortunately this almost is unneccesary, kind of
                 (void)write(1, pass, sizeof(pass) - 1);
                 int bytes_read = read(0, pass_buf, 256);
-                if (bytes_read > 0) { pass_buf[bytes_read - 1] = '\0'; } 
+                if (bytes_read > 0) { pass_buf[bytes_read - 1] = '\0'; }
+                const char key[] = "Enter a key(at most 16 characters): ";
+                char key_buf[17];
+                memset(key_buf, 0, 17);
+                (void)write(1, key, sizeof(key) - 1);
+                int key_bytes_read = read(0, key_buf, 17);
+		if (key_bytes_read > 0) { key_buf[key_bytes_read - 1] = '\0'; }
                 break;
             }
             case 'v':
@@ -59,13 +65,13 @@ int main([[maybe_unused]]int ac, [[maybe_unused]]char *av[], [[maybe_unused]]cha
             case 'e':
             case 'E': {
                 (void)write(1, "exiting", 7);
-                running  = false;        
+                running  = false;
                 break;
             }
             default: {
                 const char def[] = "Invalid option, exiting";
                 (void)write(2, def, sizeof(def) - 1);
-                return 139; 
+                break;
             }
         }
     }

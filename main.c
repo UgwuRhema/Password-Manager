@@ -33,7 +33,7 @@ int main([[maybe_unused]]int ac, [[maybe_unused]]char *av[], [[maybe_unused]]cha
         (void)write(2, make_error, sizeof(make_error) - 1);
         return 2;
     }
-    system("chown root:root ~/.passwds"); 
+    system("doas chown root:root ~/.passwds"); 
     while (running)
     {
         const char choice_q[] = "Are you creating a new password or you want to view all your passwords? (n/v/e): ";
